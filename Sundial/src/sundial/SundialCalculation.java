@@ -42,7 +42,27 @@ public class SundialCalculation extends Throwable {
 	}
 	
 	private double calculateMeridian(){
-		return 0;
+		//x mod 15 = y
+		//if y < 7.5 Go less
+		//if y > 7.5 Go more
+		double standardMeridian = (int) longitude/15;
+		int remainder = (int) (longitude%15);
+		if(remainder == 7){
+			double tenths = longitude - (int) longitude;
+			if(tenths > 0.5){
+				standardMeridian = (standardMeridian+1)*15;
+			}
+			else{
+				standardMeridian = standardMeridian*15;
+			}
+		}
+		else if(remainder < 7.5){
+			standardMeridian = standardMeridian*15;
+		}
+		else{
+			standardMeridian = (standardMeridian+1)*15;
+		}
+		return standardMeridian;
 	}
 	
 	private double calculateEOT(){
