@@ -2,7 +2,7 @@ package sundial;
 
 import java.util.Calendar;
 
-public class SundialCalculation {
+public class SundialCalculation extends Throwable {
 
 	double latitude;
 	double longitude;
@@ -21,6 +21,11 @@ public class SundialCalculation {
 	public double calculateHourline(int hour){
 		double timeMeasruredFromNoonInDegrees;
 		double angleHourLine;
+		
+		if(sanitizeInput() == false){
+			throw new IllegalArgumentException("Latitude and longitude outside of range");
+		}
+		
 		if(hour > 12){
 			int tempHour = hour - 12;
 			timeMeasruredFromNoonInDegrees = tempHour * 15;
@@ -48,7 +53,15 @@ public class SundialCalculation {
 	}
 	
 	private boolean sanitizeInput(){
-		return true;
+		boolean ret = true;
+		if(latitude > 90){
+			ret = false;
+		}
+		if(longitude > 190){
+			return false;
+		}
+		
+		return ret;
 	}
 
 }
