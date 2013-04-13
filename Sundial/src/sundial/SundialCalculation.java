@@ -4,41 +4,51 @@ import java.util.Calendar;
 
 public class SundialCalculation extends Throwable {
 
-	double latitude;
-	double longitude;
-	Calendar date;
+	private double latitude;
+	private double longitude;
+	private Calendar date;
+	private boolean dayLightSavings;
 
-	public SundialCalculation(double latitude, double longitude, Calendar date) {
+	public SundialCalculation(double latitude, double longitude, Calendar date, boolean dayLightSavings) {
 		this.date = date;
-		this.latitude = latitude;
-		this.longitude = longitude;
+		this.latitude = Math.abs(latitude);
+		this.longitude = Math.abs(longitude);
+		this.dayLightSavings = dayLightSavings;
 	}
 	
 	public double getGnomeAngle(){
 		return latitude;
 	}
 	
-	public double calculateHourline(int hour){
+	public double calculateHourline(double hour){
 		double timeMeasruredFromNoonInDegrees;
-		double angleHourLine;
+		double angleHourLine;  //in radians
 		
 		if(sanitizeInput() == false){
 			throw new IllegalArgumentException("Latitude and longitude outside of range");
 		}
 		
 		if(hour > 12){
-			int tempHour = hour - 12;
+			double tempHour = hour - 12;
 			timeMeasruredFromNoonInDegrees = tempHour * 15;
 		}
 		else{
-			int tempHour = 12 - hour;
+			double tempHour = 12 - hour;
 			timeMeasruredFromNoonInDegrees = tempHour * 15;
 		}
 		
+		timeMeasruredFromNoonInDegrees = Math.toRadians(timeMeasruredFromNoonInDegrees);
+		angleHourLine = Math.atan(Math.sin(Math.toRadians(latitude))/Math.tan(timeMeasruredFromNoonInDegrees));  //in radians
 		
-		angleHourLine = Math.atan(Math.sin(latitude)/Math.tan(timeMeasruredFromNoonInDegrees));
+		double standardMeridian = calculateMeridian();
+		double diffLongitude = longitude - standardMeridian;
+		double degreeAddToAngle = diffLongitude * 4;
+		angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
 		
-		return 0;
+		double eot = calculateEOT() * 4;
+		angleHourLine = angleHourLine + Math.toRadians(eot);
+		
+		return angleHourLine;
 	}
 	
 	private double calculateMeridian(){
@@ -68,6 +78,7 @@ public class SundialCalculation extends Throwable {
 	private double calculateEOT(){
 		int dayOfYear = date.get(Calendar.DAY_OF_YEAR);
 		double b = ((dayOfYear-81)/365)*360;
+		b = Math.toRadians(b);
 		double e = 9.87*Math.sin(2*b) - 7.53*Math.cos(b) - 1.5*Math.sin(b);
 		return e;
 	}
