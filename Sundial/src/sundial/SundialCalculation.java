@@ -2,15 +2,22 @@ package sundial;
 
 import java.util.Calendar;
 
-public class SundialCalculation extends Throwable {
+public class SundialCalculation extends Exception {
 
 	private double latitude;
 	private double longitude;
 	private Calendar date;
 	private boolean dayLightSavings;
+	boolean easternHemisphere;
 
 	public SundialCalculation(double latitude, double longitude, Calendar date, boolean dayLightSavings) {
 		this.date = date;
+		if(longitude < 0){
+			easternHemisphere = false;
+		}
+		else{
+			easternHemisphere = true;
+		}
 		this.latitude = Math.abs(latitude);
 		this.longitude = Math.abs(longitude);
 		this.dayLightSavings = dayLightSavings;
@@ -20,9 +27,10 @@ public class SundialCalculation extends Throwable {
 		return latitude;
 	}
 	
-	public double calculateHourline(double hour){
+	public double calculateHourline(double hour) throws IllegalArgumentException {
 		double timeMeasruredFromNoonInDegrees;
 		double angleHourLine;  //in radians
+		
 		
 		if(sanitizeInput() == false){
 			throw new IllegalArgumentException("Latitude and longitude outside of range");
@@ -38,15 +46,36 @@ public class SundialCalculation extends Throwable {
 		}
 		
 		timeMeasruredFromNoonInDegrees = Math.toRadians(timeMeasruredFromNoonInDegrees);
-		angleHourLine = Math.atan(Math.sin(Math.toRadians(latitude))/Math.tan(timeMeasruredFromNoonInDegrees));  //in radians
+		angleHourLine = Math.atan(Math.sin(Math.toRadians(latitude))*Math.tan(timeMeasruredFromNoonInDegrees));
 		
 		double standardMeridian = calculateMeridian();
-		double diffLongitude = longitude - standardMeridian;
-		double degreeAddToAngle = diffLongitude * 4;
-		angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
+		double diffLongitude;
+		double degreeAddToAngle;
+		//+ OR - IF GREATER?  NOT SURE NEED TO CHECK.
+		if(easternHemisphere == true){
+			if(longitude > standardMeridian){
+				 diffLongitude = longitude - standardMeridian;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
+			}
 		
-		double eot = calculateEOT() * 4;
+			else{
+				 diffLongitude = standardMeridian - longitude;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 angleHourLine = angleHourLine + Math.toRadians(degreeAddToAngle);
+			}
+		}
+		
+		
+		
+		double eot = (calculateEOT()/60) * 15;
 		angleHourLine = angleHourLine + Math.toRadians(eot);
+		
+		if(dayLightSavings == true){
+			angleHourLine = angleHourLine + Math.toRadians(15);
+		}
 		
 		return angleHourLine;
 	}
@@ -75,9 +104,10 @@ public class SundialCalculation extends Throwable {
 		return standardMeridian;
 	}
 	
+	//Returns in minutes
 	private double calculateEOT(){
 		int dayOfYear = date.get(Calendar.DAY_OF_YEAR);
-		double b = ((dayOfYear-81)/365)*360;
+		double b = ((dayOfYear-81)/365.0)*360.0;
 		b = Math.toRadians(b);
 		double e = 9.87*Math.sin(2*b) - 7.53*Math.cos(b) - 1.5*Math.sin(b);
 		return e;
@@ -95,4 +125,12 @@ public class SundialCalculation extends Throwable {
 		return ret;
 	}
 
+	public double[] getAllAngles(){
+		double[] hourAngles = new double[13];
+		for(int i=0;i<13;i++){
+			int j = i+6;
+			hourAngles[i] = calculateHourline(j);
+		}
+		return hourAngles;
+	}
 }
