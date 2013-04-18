@@ -57,6 +57,21 @@ public class SundialCalculation extends Exception {
 				 diffLongitude = longitude - standardMeridian;
 				 degreeAddToAngle = diffLongitude * 4;
 				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 angleHourLine = angleHourLine + Math.toRadians(degreeAddToAngle);
+			}
+		
+			else{
+				 diffLongitude = standardMeridian - longitude;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
+			}
+		}
+		else{//in western hemisphere, need to switch the values around
+			if(longitude > standardMeridian){
+				 diffLongitude = longitude - standardMeridian;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
 				 angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
 			}
 		
@@ -67,7 +82,6 @@ public class SundialCalculation extends Exception {
 				 angleHourLine = angleHourLine + Math.toRadians(degreeAddToAngle);
 			}
 		}
-		
 		
 		
 		double eot = (calculateEOT()/60) * 15;
