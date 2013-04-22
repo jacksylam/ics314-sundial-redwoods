@@ -69,6 +69,7 @@ public class SundialCalculation extends Exception {
 		timeMeasruredFromNoonInDegrees = Math.toRadians(timeMeasruredFromNoonInDegrees);
 		angleHourLine = Math.atan(Math.sin(Math.toRadians(latitude))*Math.tan(timeMeasruredFromNoonInDegrees));
 		
+     //NUKE EVERYTHING BELOW THIS LINE.
 		double standardMeridian = calculateMeridian();
 		double diffLongitude;
 		double degreeAddToAngle;
