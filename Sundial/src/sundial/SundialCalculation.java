@@ -12,8 +12,9 @@ public class SundialCalculation extends Exception {
 	private double latitude;
 	private double longitude;
 	private Calendar date;
-	private boolean dayLightSavings;
 	boolean easternHemisphere;
+	double[] hourAngles = new double[13];
+	double[] modifiedHourAngles = new double[13];
 
 	/**
 	 * @param latitude
@@ -21,7 +22,7 @@ public class SundialCalculation extends Exception {
 	 * @param date
 	 * @param dayLightSavings
 	 */
-	public SundialCalculation(double latitude, double longitude, Calendar date, boolean dayLightSavings) {
+	public SundialCalculation(double latitude, double longitude, Calendar date) {
 		this.date = date;
 		if(longitude < 0){
 			easternHemisphere = false;
@@ -31,7 +32,6 @@ public class SundialCalculation extends Exception {
 		}
 		this.latitude = Math.abs(latitude);
 		this.longitude = Math.abs(longitude);
-		this.dayLightSavings = dayLightSavings;
 	}
 	
 	/**
@@ -51,66 +51,28 @@ public class SundialCalculation extends Exception {
 	public double calculateHourline(double hour) throws IllegalArgumentException {
 		double timeMeasruredFromNoonInDegrees;
 		double angleHourLine;  //in radians
-		
+		boolean isMorning;
 		
 		if(sanitizeInput() == false){
 			throw new IllegalArgumentException("Latitude and longitude outside of range");
 		}
 		
-		if(hour > 12){
+		if(hour >= 12){
 			double tempHour = hour - 12;
 			timeMeasruredFromNoonInDegrees = tempHour * 15;
+			isMorning = false;
 		}
 		else{
 			double tempHour = 12 - hour;
 			timeMeasruredFromNoonInDegrees = tempHour * 15;
+			isMorning = true;
 		}
 		
 		timeMeasruredFromNoonInDegrees = Math.toRadians(timeMeasruredFromNoonInDegrees);
 		angleHourLine = Math.atan(Math.sin(Math.toRadians(latitude))*Math.tan(timeMeasruredFromNoonInDegrees));
-		
-     //NUKE EVERYTHING BELOW THIS LINE.
-		double standardMeridian = calculateMeridian();
-		double diffLongitude;
-		double degreeAddToAngle;
-
-		if(easternHemisphere == true){
-			if(longitude > standardMeridian){
-				 diffLongitude = longitude - standardMeridian;
-				 degreeAddToAngle = diffLongitude * 4;
-				 degreeAddToAngle = degreeAddToAngle/60.0;
-				 angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
-			}
-		
-			else{
-				 diffLongitude = standardMeridian - longitude;
-				 degreeAddToAngle = diffLongitude * 4;
-				 degreeAddToAngle = degreeAddToAngle/60.0;
-				 angleHourLine = angleHourLine + Math.toRadians(degreeAddToAngle);
-			}
-		}
-		else{//in western hemisphere, need to switch the values around
-			if(longitude > standardMeridian){
-				 diffLongitude = longitude - standardMeridian;
-				 degreeAddToAngle = diffLongitude * 4;
-				 degreeAddToAngle = degreeAddToAngle/60.0;
-				 angleHourLine = angleHourLine + Math.toRadians(degreeAddToAngle);
-			}
-		
-			else{
-				 diffLongitude = standardMeridian - longitude;
-				 degreeAddToAngle = diffLongitude * 4;
-				 degreeAddToAngle = degreeAddToAngle/60.0;
-				 angleHourLine = angleHourLine - Math.toRadians(degreeAddToAngle);
-			}
-		}
-		
-		
-		double eot = (calculateEOT()/60) * 15;
-		angleHourLine = angleHourLine + Math.toRadians(eot);
-		
-		if(dayLightSavings == true){
-			angleHourLine = angleHourLine + Math.toRadians(15);
+			
+		if(isMorning == true){
+			angleHourLine = angleHourLine * -1;
 		}
 		
 		return angleHourLine;
@@ -174,17 +136,85 @@ public class SundialCalculation extends Exception {
 
 	/**
 	 * Gets the angle of the hourlines from 6am to 6pm
-	 * @return - An array of angle of the hourlines in radians.
 	 * Element 0 is 6am, all the way up to element 12 which is 6pm.
-	 * Please ignore element 6 since it is the angle of the noon/gnome.
+	 * Did not do any modifcations yet.
 	 * 
 	 */
-	public double[] getAllAngles(){
-		double[] hourAngles = new double[13];
+	private void getAllAngles(){
 		for(int i=0;i<13;i++){
 			int j = i+6;
 			hourAngles[i] = calculateHourline(j);
 		}
-		return hourAngles;
 	}
+	
+	/**
+	 * Gets the angle of the hourlines with modified angles
+	 * Calculates the differences between standard meridian
+	 * and longitide as well as the eot.
+	 */
+	private void getAllModifiedAngles(){
+		double standardMeridian = calculateMeridian();
+		double diffLongitude;
+		double degreeAddToAngle;
+
+		if(easternHemisphere == true){
+			if(longitude > standardMeridian){ //east of meridian
+				 diffLongitude = longitude - standardMeridian;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 for(int i =0; i<hourAngles.length; i++){
+					 modifiedHourAngles[i] = hourAngles[i] + Math.toRadians(degreeAddToAngle); 
+				 }
+			}
+		
+			else{ //west of meridian
+				 diffLongitude = standardMeridian - longitude;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 for(int i =0; i<hourAngles.length; i++){
+					 modifiedHourAngles[i] = hourAngles[i] - Math.toRadians(degreeAddToAngle); 
+				 }
+			}
+		}
+		else{//in western hemisphere, need to switch the values around
+			if(longitude > standardMeridian){//west of meridian
+				 diffLongitude = longitude - standardMeridian;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 for(int i =0; i<hourAngles.length; i++){
+					 modifiedHourAngles[i] = hourAngles[i] - Math.toRadians(degreeAddToAngle); 
+				 }
+			}
+		
+			else{//east of meridian
+				 diffLongitude = standardMeridian - longitude;
+				 degreeAddToAngle = diffLongitude * 4;
+				 degreeAddToAngle = degreeAddToAngle/60.0;
+				 for(int i =0; i<hourAngles.length; i++){
+					 modifiedHourAngles[i] = hourAngles[i] + Math.toRadians(degreeAddToAngle); 
+				 }
+			}
+		}
+		
+		
+		double eot = (calculateEOT()/60) * 15;
+		for(int i=0; i<modifiedHourAngles.length;i++){
+			modifiedHourAngles[i] = modifiedHourAngles[i] + Math.toRadians(eot);
+		}
+		
+		
+	}
+
+	/**
+	 * Gets the angles for the sundial.
+	 * element 0 is 6am and element 12 is 6pm.
+	 * This is without Daylight Savings.
+	 * @return - the angle of the hourlines in radians.
+	 */
+	public double[] getModifiedHourAngles() {
+		getAllAngles();
+		getAllModifiedAngles();
+		return modifiedHourAngles;
+	}
+	
 }
