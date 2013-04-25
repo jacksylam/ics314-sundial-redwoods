@@ -127,7 +127,7 @@ public class SundialDisplay{
 	 * Creates a frame for displaying the sundial in a new window.
 	 */
 	public void displayWindow(){
-        JFrame frame = new JFrame("stuff");
+        JFrame frame = new JFrame("Sundial");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
