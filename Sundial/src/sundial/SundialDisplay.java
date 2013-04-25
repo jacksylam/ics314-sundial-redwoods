@@ -106,7 +106,7 @@ public class SundialDisplay{
 	    		ytarget = SUN_HEIGHT - ((int) (Math.tan(newangle)*(SUN_WIDTH/2)));
 	    	}
 	    	
-	    	System.out.println("Angle: " + angle + "   x: " + xtarget + "   y: " + ytarget);
+	   
 	    	//draw the line using calculated x and y for non-origin point
 	    	g.drawLine(xtarget, ytarget, ORIGIN_X, SUN_HEIGHT);
 	    }
