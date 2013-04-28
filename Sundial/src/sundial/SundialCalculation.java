@@ -5,7 +5,7 @@ import java.util.Calendar;
 /**
  * Class to do Sundial calculations to fetch angles for the hour lines.
  * HOW TO USE:
- * 1. Create a Date object because SundialCalculation requires a date object
+ * 1. Create a calendar object because SundialCalculation requires a calendar object
  * 2. Make a SundialCalculation Object
  * 3. Get an array of double to get getModifiedHourAngles()
  * NOTE:  The angles are in RADIANS for this array.
@@ -29,7 +29,7 @@ public class SundialCalculation extends Exception {
 	 * Creates the SundialCalculation object.  
 	 * @param latitude - latitude in degrees
 	 * @param longitude - longitude in degrees
-	 * @param date - date object
+	 * @param date - calendar object
 	 */
 	public SundialCalculation(double latitude, double longitude, Calendar date) {
 		this.date = date;
