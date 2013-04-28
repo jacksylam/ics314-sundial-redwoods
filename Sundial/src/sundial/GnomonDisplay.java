@@ -1,5 +1,3 @@
-package sundial;
-
 // Import the graphics classes.
 import java.awt.*;
 import javax.swing.*;
@@ -80,7 +78,7 @@ public class GnomonDisplay{
 	 */
 	public void displayWindow(){
         JFrame frame = new JFrame("Gnomon");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
         GnomonPanel panel = new GnomonPanel();
