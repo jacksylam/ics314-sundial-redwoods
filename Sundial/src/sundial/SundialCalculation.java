@@ -3,6 +3,15 @@ package sundial;
 import java.util.Calendar;
 
 /**
+ * Class to do Sundial calculations to fetch angles for the hour lines.
+ * HOW TO USE:
+ * 1. Create a Date object because SundialCalculation requires a date object
+ * 2. Make a SundialCalculation Object
+ * 3. Get an array of double to get getModifiedHourAngles()
+ * NOTE:  The angles are in RADIANS for this array.
+ * 
+ * The getGnomeAngle() returns the angle of the gnome in RADIANS.
+ * 
  * @author Jack
  *
  */
@@ -12,15 +21,15 @@ public class SundialCalculation extends Exception {
 	private double latitude;
 	private double longitude;
 	private Calendar date;
-	boolean easternHemisphere;
-	double[] hourAngles = new double[13];
-	double[] modifiedHourAngles = new double[13];
+	private boolean easternHemisphere;
+	private double[] hourAngles = new double[13];
+	private double[] modifiedHourAngles = new double[13];
 
 	/**
-	 * @param latitude
-	 * @param longitude
-	 * @param date
-	 * @param dayLightSavings
+	 * Creates the SundialCalculation object.  
+	 * @param latitude - latitude in degrees
+	 * @param longitude - longitude in degrees
+	 * @param date - date object
 	 */
 	public SundialCalculation(double latitude, double longitude, Calendar date) {
 		this.date = date;
@@ -36,10 +45,10 @@ public class SundialCalculation extends Exception {
 	
 	/**
 	 * Gets the gnome's angle.
-	 * @return- gnome's angle in double.
+	 * @return- gnome's angle in double in radians.
 	 */
 	public double getGnomeAngle(){
-		return latitude;
+		return Math.toRadians(latitude);
 	}
 	
 	/**
@@ -48,7 +57,7 @@ public class SundialCalculation extends Exception {
 	 * @return - angle of the hourline in radians
 	 * @throws IllegalArgumentException - latitude or longitude are outside of range.
 	 */
-	public double calculateHourline(double hour) throws IllegalArgumentException {
+	private double calculateHourline(double hour) throws IllegalArgumentException {
 		double timeMeasruredFromNoonInDegrees;
 		double angleHourLine;  //in radians
 		boolean isMorning;
@@ -80,7 +89,7 @@ public class SundialCalculation extends Exception {
 	
 	/**
 	 * Calculates the standard meridian based on the longitide
-	 * @return - the standard merdian in double.
+	 * @return - the standard meridian in double.
 	 */
 	private double calculateMeridian(){
 		//x mod 15 = y
@@ -137,7 +146,7 @@ public class SundialCalculation extends Exception {
 	/**
 	 * Gets the angle of the hourlines from 6am to 6pm
 	 * Element 0 is 6am, all the way up to element 12 which is 6pm.
-	 * Did not do any modifcations yet.
+	 * Did not do any modifications yet.
 	 * 
 	 */
 	private void getAllAngles(){
