@@ -6,6 +6,8 @@ import java.awt.event.*;
 import java.util.Calendar;
 import javax.swing.*; 
 
+
+
 public class SundialGui extends Applet implements ActionListener {
 	
 	protected Label title;
@@ -26,14 +28,11 @@ public class SundialGui extends Applet implements ActionListener {
 	protected TextField year;
 	
 	
-	
-	
 	public void init() {
 		
 		setLayout(null);
 		setSize(440,330);
 		
-		//JOptionPane.showMessageDialog(null, null, "title", JOptionPane.PLAIN_MESSAGE);
 		
 		title = new Label("Sundial - Redwoods");
 		title.setFont(new Font("Arial",Font.BOLD, 20));
@@ -118,9 +117,11 @@ public class SundialGui extends Applet implements ActionListener {
 		Double lattitudeValue;
 		Double longitudeValue;
 		Calendar calendar; 
+		Boolean dSavingsState;
 		int monthTmp;
 		int dayTmp;
 		int yearTmp;
+		
 		
 		String input;
 		Double value;
@@ -234,22 +235,41 @@ public class SundialGui extends Applet implements ActionListener {
 				return;
 			}
 			
+			if (daylightSavings.getState()){
+				dSavingsState = true;
+				System.out.println("true");
+			}else{
+				dSavingsState = false;
+				System.out.println("false");
+			}
 			
-			System.out.println(lattitudeValue);
+			/*System.out.println(lattitudeValue);
 			System.out.println(longitudeValue);
 			System.out.println(monthTmp);
 			System.out.println(dayTmp);
-			System.out.println(yearTmp);
+			System.out.println(yearTmp);*/
 			
+			
+			calendar = setCalendar(monthTmp, dayTmp, yearTmp);
+			//System.out.println(calendar);
+			
+			SundialCalculation test = new SundialCalculation(lattitudeValue, longitudeValue, calendar);
+			double[] temp3 = test.getModifiedHourAngles();
+			for(int i = 0; i<temp3.length; i++){
+				System.out.println(Math.toDegrees(temp3[i]));
+			}
 			
 			
 		}
 		
 	}
 	
-	
-	/*public setCalendar (int month, int day, int year) {
-	}*/
-	
-	
+	public Calendar setCalendar (int month, int day, int year) {
+		Calendar date = Calendar.getInstance();
+   	date.set(Calendar.YEAR, year);
+   	date.set(Calendar.MONTH, month);
+   	date.set(Calendar.DAY_OF_MONTH, day);
+		
+		return date;
+	}
 }
