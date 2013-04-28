@@ -136,7 +136,7 @@ public class SundialCalculation extends Exception {
 		if(latitude > 90){
 			ret = false;
 		}
-		if(longitude > 190){
+		if(longitude > 180){
 			return false;
 		}
 		
