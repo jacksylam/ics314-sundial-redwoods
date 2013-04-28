@@ -1,9 +1,9 @@
-package sundial;
+//package sundial;
 
 import java.awt.*;
 import java.applet.*;
 import java.awt.event.*;
-import java.util.Calendar;
+import java.util.*;
 import javax.swing.*; 
 
 
@@ -86,9 +86,6 @@ public class SundialGui extends Applet implements ActionListener {
 		day.setBounds(235,180,35,20);
 		
 		year.setBounds(280,180,50,20);
-		
-		
-		
 		
 		
 		add(title);
@@ -243,23 +240,26 @@ public class SundialGui extends Applet implements ActionListener {
 				System.out.println("false");
 			}
 			
-			/*System.out.println(lattitudeValue);
-			System.out.println(longitudeValue);
-			System.out.println(monthTmp);
-			System.out.println(dayTmp);
-			System.out.println(yearTmp);*/
-			
 			
 			calendar = setCalendar(monthTmp, dayTmp, yearTmp);
-			//System.out.println(calendar);
 			
-			SundialCalculation test = new SundialCalculation(lattitudeValue, longitudeValue, calendar);
+			Date temp = new Date();
+			Calendar temp2 = calendar;
+			temp2.setTime(temp);
+			SundialCalculation test = new SundialCalculation(lattitudeValue, longitudeValue, temp2);
 			double[] temp3 = test.getModifiedHourAngles();
 			for(int i = 0; i<temp3.length; i++){
 				System.out.println(Math.toDegrees(temp3[i]));
 			}
 			
-			
+			Double output = test.getGnomeAngle();
+		
+			SundialDisplay dis = new SundialDisplay(temp3);
+			dis.displayWindow();
+		
+			GnomonDisplay disp = new GnomonDisplay(output);
+			disp.displayWindow();
+						
 		}
 		
 	}
