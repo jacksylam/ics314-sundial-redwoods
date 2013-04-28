@@ -1,4 +1,4 @@
-//package sundial;
+package sundial;
 
 import java.awt.*;
 import java.applet.*;
@@ -130,8 +130,10 @@ public class SundialGui extends Applet implements ActionListener {
 			input = lattitude.getText().trim();
 			try {
 				value = Double.parseDouble(input);
-				if (value > 90) {
-					this.messageLabel.setText("ERROR: Latitude outside of range");
+				double absValue = Math.abs(value);
+				//Eliminate latitudes over 80 or under 10 because gnome won't work too well
+				if ((absValue > 80) || (absValue < 10)) {
+					this.messageLabel.setText("ERROR: Latitude outside of range. Must be -10 to -80 or 10 to 80");
 					this.messageLabel.setForeground(Color.red);
 					return;
 				}else {
@@ -151,8 +153,8 @@ public class SundialGui extends Applet implements ActionListener {
 			input = longitude.getText().trim();
 			try {
 				value = Double.parseDouble(input);
-				if (value > 190) {
-					this.messageLabel.setText("ERROR: Longitude outside of range");
+				if ((value > 180) || (value < -180)) {
+					this.messageLabel.setText("ERROR: Longitude outside of range. Must be  -180 to 180");
 					this.messageLabel.setForeground(Color.red);
 					return;
 				}else {
@@ -216,7 +218,7 @@ public class SundialGui extends Applet implements ActionListener {
 			try {
 				intValue = Integer.parseInt(input);
 				if (intValue < 2013 || intValue > 2050) {
-					this.messageLabel.setText("ERROR: Year outside of range");
+					this.messageLabel.setText("ERROR: Year outside of range. Must be greater than 2012");
 					this.messageLabel.setForeground(Color.red);
 					return;
 				}else { 
@@ -254,7 +256,7 @@ public class SundialGui extends Applet implements ActionListener {
 			
 			Double output = test.getGnomeAngle();
 		
-			SundialDisplay dis = new SundialDisplay(temp3);
+			SundialDisplay dis = new SundialDisplay(temp3, dSavingsState);
 			dis.displayWindow();
 		
 			GnomonDisplay disp = new GnomonDisplay(output);

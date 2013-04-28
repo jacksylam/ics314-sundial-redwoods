@@ -1,3 +1,5 @@
+package sundial;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.*;
@@ -23,7 +25,7 @@ public class Test {
       
 		Double output = test.getGnomeAngle();
 		
-		SundialDisplay dis = new SundialDisplay(temp3);
+		SundialDisplay dis = new SundialDisplay(temp3, true);
 		dis.displayWindow();
 		
 		GnomonDisplay disp = new GnomonDisplay(output);

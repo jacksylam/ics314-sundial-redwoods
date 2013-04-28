@@ -1,3 +1,4 @@
+package sundial;
 // Import the graphics classes.
 import java.awt.*;
 import javax.swing.*;
@@ -34,6 +35,8 @@ public class SundialDisplay{
 	
 	//origin y-coordinate is equal to SUN_HEIGHT
 	
+	//boolean to determine if daylight savings is on
+	private boolean daylightSavings;
 	
 	/**
 	 * Inner class that acts as a panel for displaying the sundial
@@ -66,7 +69,8 @@ public class SundialDisplay{
 	        
 	        //loop through array of angles and call helper method on each
 	        for(int i = 0; i < hourAngles.length; i++){
-	        	this.paintHourLine(g, hourAngles[i]);
+	        	this.paintHourLine(g, hourAngles[i], i);
+	        	
 	        }
 	    }
 	    
@@ -77,14 +81,18 @@ public class SundialDisplay{
 	     * @param	Graphics g
 	     * @param	double angle from gnomon line
 	     */
-	    private void paintHourLine(Graphics g, double angle){
+	    private void paintHourLine(Graphics g, double angle, int hour){
 	    	int xtarget = 0;
 	    	int ytarget = 0;
+	    	
+	    	//angle is over 90 degrees, not rendering on sundial
+	    	if(Math.abs(angle) > (Math.PI/2.0)){
+	    		return;
+	    	}
 	    	
 	    	//use tangent function to find correct x-coordinate of hour line's
 	    	//non-origin point
 	    	xtarget = ORIGIN_X + ((int) (Math.tan(angle) * SUN_HEIGHT));
-	    
 	    	/*
 	    	 * Special calculations made if line hits left or right wall of sundial:
 	    	 */
@@ -105,10 +113,17 @@ public class SundialDisplay{
 	    		double newangle = (Math.PI/2.0) - Math.abs(angle);
 	    		ytarget = SUN_HEIGHT - ((int) (Math.tan(newangle)*(SUN_WIDTH/2)));
 	    	}
-	    	
+	    
 	   
 	    	//draw the line using calculated x and y for non-origin point
 	    	g.drawLine(xtarget, ytarget, ORIGIN_X, SUN_HEIGHT);
+	    	if(daylightSavings == false){
+	        	hour += 6;
+	    	}
+	    	else{
+	    		hour += 7;
+	    	}
+	    	g.drawString(Integer.toString(hour), xtarget, ytarget+10);
 	    }
 	    
 	}
@@ -116,10 +131,12 @@ public class SundialDisplay{
 	/**
 	 * Constructor for a Sundial Display object
 	 * @param hourAngles; array of doubles with 13 elements
+	 * @param DST; boolean if Daylight Savings is on or not
 	 * 			0 representing 6AM to 12 representing 6PM
 	 */
-	public SundialDisplay(double[] hourAngles){
+	public SundialDisplay(double[] hourAngles, boolean DST){
 		this.hourAngles = hourAngles;
+		this.daylightSavings = DST;
 	}
 	
 	
@@ -131,7 +148,7 @@ public class SundialDisplay{
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
-        SundialPanel panel = new SundialPanel();
+        SundialPanel panel = new SundialPanel();    
         frame.setContentPane(panel);          
         frame.setVisible(true);                   
 	}

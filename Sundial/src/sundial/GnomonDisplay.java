@@ -1,3 +1,4 @@
+package sundial;
 // Import the graphics classes.
 import java.awt.*;
 import javax.swing.*;
