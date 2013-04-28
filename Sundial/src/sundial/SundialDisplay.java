@@ -1,5 +1,3 @@
-package sundial;
-
 // Import the graphics classes.
 import java.awt.*;
 import javax.swing.*;
@@ -130,7 +128,7 @@ public class SundialDisplay{
 	 */
 	public void displayWindow(){
         JFrame frame = new JFrame("Sundial");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(FRAME_WIDTH,FRAME_HEIGHT);
 
         SundialPanel panel = new SundialPanel();
